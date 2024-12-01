@@ -1,6 +1,7 @@
 package com.example.shipmentdemoapp.presentaion.ui.composables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,10 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +45,8 @@ fun RegisterScreen() {
     )
 
     var selectedCountry by remember { mutableStateOf(countryList.first()) }
+    var expanded by remember { mutableStateOf(false) }
+
 
 
     Column(
@@ -83,21 +90,45 @@ fun RegisterScreen() {
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(10.dp))
+
         // Country Dropdown
+        Button(
+            onClick = { expanded = !expanded },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            // Text showing the selected country
+            Text(
+                text = selectedCountry,
+                modifier = Modifier.weight(1f)
+            )
+
+            // Down Arrow Icon
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Dropdown Arrow",
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
+
+        // Dropdown Menu for selecting country
         DropdownMenu(
-            expanded = true,
-            onDismissRequest = {},
+            expanded = expanded,
+            onDismissRequest = { expanded = false }, // Close dropdown when clicked outside
             modifier = Modifier.fillMaxWidth()
         ) {
             countryList.forEach { country ->
-                DropdownMenuItem(text = {
-                     Text(text = country)
-                }, onClick = {
-                    selectedCountry=country
-                })
+                DropdownMenuItem(
+                    text = { Text(text = country) },
+                    onClick = {
+                        selectedCountry = country
+                        expanded = false // Close the dropdown after selection
+                    }
+                )
             }
         }
-
         // Image Picker
         Button(
             onClick = {  },

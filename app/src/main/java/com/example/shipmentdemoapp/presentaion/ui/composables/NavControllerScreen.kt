@@ -1,5 +1,6 @@
 package com.example.shipmentdemoapp.presentaion.ui.composables
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,7 +15,10 @@ fun NavControllerScreen() {
         composable<ScreenRoutes.LoginScreen> {
             LoginScreen(onClickReigster = {
                 navController.navigate(ScreenRoutes.RegisterScreen)
-            })
+            }, onClickHome = {
+                navController.navigate(ScreenRoutes.HomeScreen)
+            }
+            )
 
         }
 
@@ -24,6 +28,8 @@ fun NavControllerScreen() {
         }
 
         composable<ScreenRoutes.HomeScreen> {
+            
+            Text(text = "Hello")
 
         }
 

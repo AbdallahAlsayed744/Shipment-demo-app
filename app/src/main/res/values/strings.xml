@@ -7,4 +7,6 @@
     <string name="register">Register</string>
     <string name="name">Name</string>
     <string name="email">Email</string>
+    <string name="country">Country\n</string>
+    <string name="select_country">Selected Countery Id</string>
 </resources>
