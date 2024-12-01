@@ -12,10 +12,14 @@ fun NavControllerScreen() {
 
     NavHost(navController = navController, startDestination = ScreenRoutes.LoginScreen){
         composable<ScreenRoutes.LoginScreen> {
+            LoginScreen(onClickReigster = {
+                navController.navigate(ScreenRoutes.RegisterScreen)
+            })
 
         }
 
         composable<ScreenRoutes.RegisterScreen> {
+            RegisterScreen()
 
         }
 
