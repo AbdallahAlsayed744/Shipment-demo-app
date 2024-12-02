@@ -129,4 +129,9 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     kaptAndroidTest(libs.hilt.android.compiler)
 
+
+    //dataStore
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+
+
 }

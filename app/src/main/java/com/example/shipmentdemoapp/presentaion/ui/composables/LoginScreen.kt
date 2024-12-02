@@ -37,7 +37,7 @@ import com.example.shipmentdemoapp.presentaion.LoginResult
 import com.example.shipmentdemoapp.presentaion.viewmodel.LoginViewModel
 
 @Composable
-fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster: () -> Unit,onClickHome: () -> Unit) {
+fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster: () -> Unit,onClickHome: (String, String) -> Unit) {
     val phoneState by loginViewModel.phoneNumber.collectAsState()
     val passwordState by loginViewModel.password.collectAsState()
     val loginResult by loginViewModel.loginResult.collectAsState()
@@ -127,7 +127,11 @@ fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster:
             }
 
             is LoginResult.Success -> {
-                onClickHome() // Navigate to the home screen
+                val response = (loginResult as LoginResult.Success).data
+                val accessToken = response.access_token
+                val userId = response.user.id.toString()
+
+                onClickHome(accessToken,userId)
             }
 
             is LoginResult.Failure -> {
@@ -157,32 +161,9 @@ fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster:
             )
         }
 
-        when (loginResult) {
-            is LoginResult.Idle -> {
 
-            }
-            is LoginResult.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-            }
-            is LoginResult.Success -> {
-//                Text("Welcome! ${(loginResult as LoginResult.Success).data.auth.type}")
-                onClickHome()
-            }
-            is LoginResult.Failure -> {
-
-                LaunchedEffect(loginResult) {
-                    // Show a toast on failure
-                    Toast.makeText(
-                        context,
-                        (loginResult as LoginResult.Failure).message,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-//                Toast.makeText(LocalContext.current, "${(loginResult as LoginResult.Failure).message}", Toast.LENGTH_SHORT).show()
-
-            }
         }
 
 
-    }
+
 }
