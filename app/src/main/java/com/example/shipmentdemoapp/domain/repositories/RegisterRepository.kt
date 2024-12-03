@@ -15,4 +15,7 @@ interface RegisterRepository {
         countryId: RequestBody,
         file: MultipartBody.Part,
     ): Response<RegisterResponse>
+
+
+    suspend fun getCountries(): Response<List<String>>
 }

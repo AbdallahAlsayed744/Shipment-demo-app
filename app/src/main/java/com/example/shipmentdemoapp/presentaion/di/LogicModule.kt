@@ -7,6 +7,7 @@ import com.example.shipmentdemoapp.data.repositories.LoginRepositoryimpl
 import com.example.shipmentdemoapp.data.repositories.RegisterRepositoryImpl
 import com.example.shipmentdemoapp.domain.repositories.LoginRepository
 import com.example.shipmentdemoapp.domain.repositories.RegisterRepository
+import com.example.shipmentdemoapp.domain.usecase.GetCountriesUseCase
 import com.example.shipmentdemoapp.domain.usecase.LoginUseCase
 import com.example.shipmentdemoapp.domain.usecase.RefreshTokenUseCase
 import com.example.shipmentdemoapp.domain.usecase.RegisterUseCase
@@ -53,6 +54,12 @@ object LogicModule {
     @Singleton
     fun provideRegisterUseCase(registerRepository: RegisterRepository): RegisterUseCase {
         return RegisterUseCase(registerRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCountriesUseCase(registerRepository: RegisterRepository): GetCountriesUseCase {
+        return GetCountriesUseCase(registerRepository)
     }
 
 
