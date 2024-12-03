@@ -2,13 +2,17 @@ package com.example.shipmentdemoapp.presentaion
 
 import kotlinx.serialization.Serializable
 
-sealed interface ScreenRoutes {
-
-    @Serializable
-    object LoginScreen : ScreenRoutes
-    @Serializable
-    object RegisterScreen : ScreenRoutes
-
-    @Serializable
-    object HomeScreen : ScreenRoutes
+sealed class ScreenRoutes(val route: String) {
+    object LoginScreen : ScreenRoutes("login_screen")
+    object RegisterScreen : ScreenRoutes("register_screen")
+    data class HomeScreen(val userId: String, val refreshToken: String) : ScreenRoutes("home_screen/$userId/$refreshToken") {
+        companion object {
+            const val routeBase = "home_screen"
+            const val userIdArg = "userId"
+            const val tokenArg = "refreshToken"
+            fun createRoute(userId: String, refreshToken: String): String {
+                return "$routeBase/$userId/$refreshToken"
+            }
+        }
+    }
 }
