@@ -15,8 +15,10 @@ class RegisterUseCase(
         phone: RequestBody,
         password: RequestBody,
         countryId: RequestBody,
-        file: MultipartBody.Part
-    ) = registerRepository.register(name, email, phone, password, countryId, file)
+        type: RequestBody,
+        file: MultipartBody.Part,
+        token: RequestBody
+    ) = registerRepository.register(name, email, phone, password, countryId, type,file, token)
 
 
 }

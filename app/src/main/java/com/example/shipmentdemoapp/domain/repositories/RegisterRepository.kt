@@ -1,5 +1,6 @@
 package com.example.shipmentdemoapp.domain.repositories
 
+import com.example.shipmentdemoapp.data.remote.dto.CountriesResponse
 import com.example.shipmentdemoapp.data.remote.dto.RegisterResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -13,9 +14,11 @@ interface RegisterRepository {
         phone: RequestBody,
         password: RequestBody,
         countryId: RequestBody,
+        type: RequestBody,
         file: MultipartBody.Part,
+        token: RequestBody
     ): Response<RegisterResponse>
 
 
-    suspend fun getCountries(): Response<List<String>>
+    suspend fun getCountries(): Response<CountriesResponse>
 }

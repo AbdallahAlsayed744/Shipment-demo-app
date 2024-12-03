@@ -15,4 +15,15 @@ sealed class ScreenRoutes(val route: String) {
             }
         }
     }
+
+    data class ShipmentQuotation(val token:String) : ScreenRoutes("shipment_quotation/$token") {
+        companion object {
+            const val routeBase = "shipment_quotation"
+            const val tokenArg = "token"
+
+            fun createRoute(token: String): String {
+                return "$routeBase/$token"
+            }
+        }
+    }
 }

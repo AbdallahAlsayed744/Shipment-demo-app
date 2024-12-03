@@ -24,6 +24,7 @@ fun NavControllerScreen(
     loginViewModel: LoginViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
+    val context = LocalContext.current
 
     NavHost(navController = navController, startDestination = startDestination) {
         // Login Screen
@@ -40,7 +41,11 @@ fun NavControllerScreen(
 
         // Register Screen
         composable(ScreenRoutes.RegisterScreen.route) {
-            RegisterScreen()
+            RegisterScreen(
+                onLoginClick = {
+                    navController.navigate(ScreenRoutes.LoginScreen.route)
+                }
+            )
         }
 
         // Home Screen with arguments
@@ -53,7 +58,25 @@ fun NavControllerScreen(
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString(ScreenRoutes.HomeScreen.userIdArg) ?: ""
             val refreshToken = backStackEntry.arguments?.getString(ScreenRoutes.HomeScreen.tokenArg) ?: ""
-            HomeScreen(userId = userId, token = refreshToken)
+            HomeScreen(userId = userId, token = refreshToken){
+                navController.navigate(ScreenRoutes.ShipmentQuotation.createRoute(it))
+            }
+        }
+
+        composable(
+           route= "${ScreenRoutes.ShipmentQuotation.routeBase}/{${ScreenRoutes.ShipmentQuotation.tokenArg}}",
+            arguments = listOf(
+                navArgument(ScreenRoutes.ShipmentQuotation.tokenArg) { type = NavType.StringType }
+            )
+        ) {backStackEntry->
+            val refreshToken = backStackEntry.arguments?.getString(ScreenRoutes.ShipmentQuotation.tokenArg) ?: ""
+            ShipmentQuotationScreen(
+                onSubmitSuccess = {
+                    Toast.makeText(context, "Shipment submitted successfully", Toast.LENGTH_SHORT).show()
+                },
+                token = refreshToken
+            )
+
         }
     }
 }

@@ -3,6 +3,7 @@ package com.example.shipmentdemoapp.presentaion.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.shipmentdemoapp.data.remote.dto.Country
 import com.example.shipmentdemoapp.domain.repositories.RegisterRepository
 import com.example.shipmentdemoapp.domain.usecase.GetCountriesUseCase
 import com.example.shipmentdemoapp.domain.usecase.RegisterUseCase
@@ -27,8 +28,8 @@ class RegisterViewModel @Inject constructor(
 
     val registrationState = MutableStateFlow<RegisterState>(RegisterState.Idle)
 
-    private val _countriesState = MutableStateFlow<RegisterState>(RegisterState.Idle)
-    val countriesState: StateFlow<RegisterState> get() = _countriesState
+    private val _countriesState = MutableStateFlow<List<Country>>(emptyList())
+    val countriesState: StateFlow<List<Country>> get() = _countriesState
 
 
     private var _name = MutableStateFlow("")
@@ -69,8 +70,9 @@ class RegisterViewModel @Inject constructor(
         phone: String,
         password: String,
         countryId: String,
+        type: String,
         file: File,
-
+        token: String
     ) {
         viewModelScope.launch {
             registrationState.value = RegisterState.Loading
@@ -80,18 +82,20 @@ class RegisterViewModel @Inject constructor(
                 val phoneBody = RequestBody.create("text/plain".toMediaTypeOrNull(), phone)
                 val passwordBody = RequestBody.create("text/plain".toMediaTypeOrNull(), password)
                 val countryIdBody = RequestBody.create("text/plain".toMediaTypeOrNull(), countryId)
-
+                val typeBody = RequestBody.create("text/plain".toMediaTypeOrNull(), type)
                 val filePart = file.let {
                     MultipartBody.Part.createFormData(
                         "file",
                         it.name,
                         RequestBody.create("image/*".toMediaTypeOrNull(), it)
                     )
+
                 }
+                val tokenBody = RequestBody.create("text/plain".toMediaTypeOrNull(), token)
 
                 val response = registerUseCase(
                     nameBody, emailBody, phoneBody, passwordBody,
-                    countryIdBody, filePart
+                    countryIdBody, typeBody,filePart, tokenBody
                 )
 
                 if (response.isSuccessful) {
@@ -109,19 +113,18 @@ class RegisterViewModel @Inject constructor(
 
     fun getCountries() {
         viewModelScope.launch {
-            _countriesState.value = RegisterState.Loading
             try {
-                val response = getCountriesUseCase.invoke()
+                val response = getCountriesUseCase()
                 if (response.isSuccessful) {
-                    _countriesState.value = RegisterState.SuccessCountries(response.body()!!)
-                    Log.d("RegisterViewModel", "Countries fetched successfully")
+                    _countriesState.value = response.body()?.countries ?: emptyList()
                 } else {
-                    _countriesState.value = RegisterState.Failure("Failed to fetch countries")
-                    Log.e("RegisterViewModel", "Failed to fetch countries")
+                    Log.e("RegisterViewModel", "Failed to fetch countries: ${response.message()}")
                 }
             } catch (e: Exception) {
-                _countriesState.value = RegisterState.Failure("Error: ${e.message}")
+                Log.e("RegisterViewModel", "Error fetching countries: ${e.message}")
             }
         }
     }
+
+
 }

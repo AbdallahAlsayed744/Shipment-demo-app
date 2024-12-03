@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.shipmentdemoapp.R
+import com.example.shipmentdemoapp.data.remote.dto.Country
 import com.example.shipmentdemoapp.presentaion.RegisterState
 import com.example.shipmentdemoapp.presentaion.viewmodel.RegisterViewModel
 import java.io.File
@@ -55,7 +57,8 @@ import java.io.FileOutputStream
 
 @Composable
 fun RegisterScreen(
-    viewModel: RegisterViewModel= hiltViewModel()
+    viewModel: RegisterViewModel= hiltViewModel(),
+    onLoginClick: () -> Unit
 ) {
 
     val registrationState by viewModel.registrationState.collectAsState()
@@ -66,32 +69,15 @@ fun RegisterScreen(
     val phone by viewModel.phone.collectAsState()
     val password by viewModel.password.collectAsState()
 
+    val context = LocalContext.current
 
-//    val countryList: List<String> = listOf(
-//        "Egypt",
-//        "KSA",
-//        "England"
-//    )
 
-    var selectedCountry by remember { mutableStateOf("") }
+
+
+    var selectedCountry by remember { mutableStateOf<Country?>(null) }
     var expanded by remember { mutableStateOf(false) }
 
     var selectedFile by remember { mutableStateOf<File?>(null) }
-
-    if (countriesState is RegisterState.Loading) {
-        CircularProgressIndicator()
-    }
-
-    val countryList = when(val state = countriesState) {
-        is RegisterState.SuccessCountries -> state.countries
-        is RegisterState.Failure -> {
-
-            emptyList()
-        }
-        else -> emptyList()
-
-
-    }
 
 
 
@@ -154,12 +140,10 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp)
         ) {
-
             Text(
-                text = selectedCountry.takeIf { it.isNotEmpty() } ?: "Select Country",
+                text = selectedCountry?.name ?: "Select Country",
                 modifier = Modifier.weight(1f)
             )
-
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = "Dropdown Arrow",
@@ -167,15 +151,14 @@ fun RegisterScreen(
             )
         }
 
-        // Dropdown Menu for selecting country
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier.fillMaxWidth()
         ) {
-            countryList.forEach { country ->
+            countriesState.forEach { country ->
                 DropdownMenuItem(
-                    text = { Text(text = country) },
+                    text = { Text(text = country.name) },
                     onClick = {
                         selectedCountry = country
                         expanded = false
@@ -183,6 +166,7 @@ fun RegisterScreen(
                 )
             }
         }
+
         // Image Picker
        ImagePickerScreen(
            onFileSelected = { file ->
@@ -197,8 +181,10 @@ fun RegisterScreen(
             onClick = {
                 selectedFile?.let { file ->
                     Log.d("RegisterScreenfile", "file: $file")
-                    viewModel.register(name, email, phone, password, selectedCountry, file)
+                    viewModel.register(name, email, phone, password, selectedCountry?.id.toString(), "",file,"")
+                    Log.d("selectedCountry", "selectedCountry: ${selectedCountry?.id}")
                 }
+                Toast.makeText(context, "Please select an image", Toast.LENGTH_SHORT).show()
 //                onRegisterClick(name, email, phone, password, countryList.indexOf(selectedCountry), imageUri)
             },
             modifier = Modifier.fillMaxWidth()
@@ -208,7 +194,11 @@ fun RegisterScreen(
 
         when (registrationState) {
             is RegisterState.Loading -> CircularProgressIndicator()
-            is RegisterState.Success -> Text("Registration Successful!")
+            is RegisterState.Success -> {
+                Text("Registration Successful!")
+                onLoginClick()
+
+            }
             is RegisterState.Failure ->
                 Text("Error: " +
                     "${(registrationState as RegisterState.Failure).error}"
