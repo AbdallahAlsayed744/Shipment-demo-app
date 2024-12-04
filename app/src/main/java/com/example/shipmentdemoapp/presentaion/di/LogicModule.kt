@@ -6,12 +6,15 @@ import com.example.shipmentdemoapp.data.remote.networking.ApiService
 import com.example.shipmentdemoapp.data.repositories.LoginRepositoryimpl
 import com.example.shipmentdemoapp.data.repositories.RegisterRepositoryImpl
 import com.example.shipmentdemoapp.data.repositories.ShipmentDataRepositoryimpl
+import com.example.shipmentdemoapp.data.repositories.ShipmentDetailsRepositoryimpl
 import com.example.shipmentdemoapp.data.repositories.ShipmentRepositoryimpl
 import com.example.shipmentdemoapp.domain.repositories.LoginRepository
 import com.example.shipmentdemoapp.domain.repositories.RegisterRepository
 import com.example.shipmentdemoapp.domain.repositories.ShipmentDataRepository
+import com.example.shipmentdemoapp.domain.repositories.ShipmentDetailsRepository
 import com.example.shipmentdemoapp.domain.repositories.ShipmentRepository
 import com.example.shipmentdemoapp.domain.usecase.GetCountriesUseCase
+import com.example.shipmentdemoapp.domain.usecase.GetShipmentDetailsUseCase
 import com.example.shipmentdemoapp.domain.usecase.GetShipmentsUseCase
 import com.example.shipmentdemoapp.domain.usecase.LoginUseCase
 import com.example.shipmentdemoapp.domain.usecase.RefreshTokenUseCase
@@ -53,6 +56,12 @@ object LogicModule {
         return ShipmentDataRepositoryimpl(api)
     }
 
+    @Provides
+    @Singleton
+    fun provideShipmentDetailsRepository(api: ApiService): ShipmentDetailsRepository {
+        return ShipmentDetailsRepositoryimpl(api)
+    }
+
 
 
 
@@ -92,6 +101,12 @@ object LogicModule {
     @Singleton
     fun provideShipmentDataUseCase(shipmentDataRepository: ShipmentDataRepository): GetShipmentsUseCase {
         return GetShipmentsUseCase(shipmentDataRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideShipmentDetailsUseCase(shipmentDetailsRepository: ShipmentDetailsRepository): GetShipmentDetailsUseCase {
+        return GetShipmentDetailsUseCase(shipmentDetailsRepository)
     }
 
 

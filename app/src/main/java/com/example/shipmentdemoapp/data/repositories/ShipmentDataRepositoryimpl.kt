@@ -1,6 +1,7 @@
 package com.example.shipmentdemoapp.data.repositories
 
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.example.shipmentdemoapp.data.remote.dto.ShipmentResponse
 import com.example.shipmentdemoapp.data.remote.networking.ApiService
@@ -12,6 +13,7 @@ import retrofit2.Response
 class ShipmentDataRepositoryimpl(
     private val apiService: ApiService
 ): ShipmentDataRepository {
+    @SuppressLint("SuspiciousIndentation")
     override suspend fun getShipmentList(token: String, page: Int): Response<ShipmentResponse> {
 
             val request = JsonObject().apply {

@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -26,12 +27,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shipmentdemoapp.data.local.TokenManager
 import com.example.shipmentdemoapp.data.local.UserManager
+import com.example.shipmentdemoapp.presentaion.theme.green
 import com.example.shipmentdemoapp.presentaion.viewmodel.ShipmentQuotationViewModel
+import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
@@ -208,7 +212,11 @@ fun ContainerInput(
                 onClick = onRemove,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 4.dp)
+                    .padding(end = 4.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red
+                )
+
             ) {
                 Text("Remove Container")
             }
@@ -218,7 +226,10 @@ fun ContainerInput(
                     onClick = onAdd,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 4.dp)
+                        .padding(start = 4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = green
+                    )
                 ) {
                     Text("Add Container")
                 }
@@ -231,9 +242,9 @@ fun ContainerInput(
 
 
 data class Container(
+//    @SerializedName("id") val id: Int, // Add `id` field
     val number: String,
     val size: String,
     val weight: String,
     val dimension: String
 )
-

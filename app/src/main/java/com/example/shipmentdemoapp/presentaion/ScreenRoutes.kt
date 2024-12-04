@@ -26,4 +26,16 @@ sealed class ScreenRoutes(val route: String) {
             }
         }
     }
+
+    data class ShipmentDetailsScreen(val shipmentId: String, val token: String) : ScreenRoutes("shipment_details_screen/$shipmentId/$token") {
+        companion object {
+            const val routeBase = "shipment_details_screen"
+            const val shipmentIdArg = "shipmentId"
+            const val tokenArg = "token"
+
+            fun createRoute(shipmentId: String, token: String): String {
+                return "$routeBase/$shipmentId/$token"
+            }
+        }
+    }
 }

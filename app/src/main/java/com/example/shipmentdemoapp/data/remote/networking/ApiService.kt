@@ -4,6 +4,8 @@ import com.example.shipmentdemoapp.data.remote.dto.CountriesResponse
 import com.example.shipmentdemoapp.data.remote.dto.LoginResponse
 import com.example.shipmentdemoapp.data.remote.dto.QuotationResponse
 import com.example.shipmentdemoapp.data.remote.dto.RegisterResponse
+import com.example.shipmentdemoapp.data.remote.dto.ShipmentDetailsRequest
+import com.example.shipmentdemoapp.data.remote.dto.ShipmentDetailsResponse
 import com.example.shipmentdemoapp.data.remote.dto.ShipmentRequest
 import com.example.shipmentdemoapp.data.remote.dto.ShipmentResponse
 import com.google.gson.JsonObject
@@ -64,6 +66,15 @@ interface ApiService {
         @Header("lang") language: String,
         @Body request: JsonObject
     ): Response<ShipmentResponse>
+
+
+
+    @POST("shippment-details")
+    suspend fun getShipmentDetails(
+        @Header("Authorization") token: String,
+        @Header("lang") language: String = "en",
+        @Body request: ShipmentDetailsRequest
+    ): Response<ShipmentDetailsResponse>
 
 
 

@@ -1,5 +1,8 @@
 package com.example.shipmentdemoapp.data.remote.dto
 
+import com.google.gson.annotations.SerializedName
+
 data class ShipmentResponse(
-    val shipments: List<Shipment>
+    @SerializedName("shippments") // Correct the spelling to match JSON
+    val shipments: ShipmentList
 )

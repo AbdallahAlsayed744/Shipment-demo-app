@@ -43,7 +43,7 @@ fun NavControllerScreen(
         composable(ScreenRoutes.RegisterScreen.route) {
             RegisterScreen(
                 onLoginClick = {
-                    navController.navigate(ScreenRoutes.LoginScreen.route)
+                    navController.navigateUp()
                 }
             )
         }
@@ -58,9 +58,11 @@ fun NavControllerScreen(
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString(ScreenRoutes.HomeScreen.userIdArg) ?: ""
             val refreshToken = backStackEntry.arguments?.getString(ScreenRoutes.HomeScreen.tokenArg) ?: ""
-            HomeScreen(userId = userId, token = refreshToken){
-                navController.navigate(ScreenRoutes.ShipmentQuotation.createRoute(it))
-            }
+            HomeScreen(userId = userId, token = refreshToken, onShippingQuotationClick = { shipmentId ->
+                navController.navigate(ScreenRoutes.ShipmentQuotation.createRoute(shipmentId))
+            }, onShipDetailsScreen = { shipmentId ->
+                navController.navigate(ScreenRoutes.ShipmentDetailsScreen.createRoute(refreshToken, shipmentId))
+            })
         }
 
         composable(
@@ -78,7 +80,21 @@ fun NavControllerScreen(
             )
 
         }
+        composable(
+            route = "${ScreenRoutes.ShipmentDetailsScreen.routeBase}/{${ScreenRoutes.ShipmentDetailsScreen.tokenArg}}/{${ScreenRoutes.ShipmentDetailsScreen.shipmentIdArg}}",
+            arguments = listOf(
+                navArgument(ScreenRoutes.ShipmentDetailsScreen.tokenArg) { type = NavType.StringType },
+                navArgument(ScreenRoutes.ShipmentDetailsScreen.shipmentIdArg) { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val token = backStackEntry.arguments?.getString(ScreenRoutes.ShipmentDetailsScreen.tokenArg) ?: ""
+            val shipmentId = backStackEntry.arguments?.getString(ScreenRoutes.ShipmentDetailsScreen.shipmentIdArg) ?: ""
+            ShipmentDetailsScreen(shipmentId = shipmentId, token = token)
+        }
+
     }
+
+
 }
 
 
