@@ -4,10 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shipmentdemoapp.data.remote.dto.Country
-import com.example.shipmentdemoapp.domain.repositories.RegisterRepository
 import com.example.shipmentdemoapp.domain.usecase.GetCountriesUseCase
 import com.example.shipmentdemoapp.domain.usecase.RegisterUseCase
-import com.example.shipmentdemoapp.presentaion.RegisterState
+import com.example.shipmentdemoapp.presentaion.utl.RegisterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -22,18 +22,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shipmentdemoapp.R
-import com.example.shipmentdemoapp.presentaion.LoginResult
+import com.example.shipmentdemoapp.presentaion.utl.LoginResult
 import com.example.shipmentdemoapp.presentaion.viewmodel.LoginViewModel
 
 @Composable
@@ -42,6 +46,9 @@ fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster:
     val passwordState by loginViewModel.password.collectAsState()
     val loginResult by loginViewModel.loginResult.collectAsState()
     val showToast by loginViewModel.showToast.collectAsState()
+
+    var phoneError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -52,7 +59,7 @@ fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster:
                 "Phone number or password cannot be empty!",
                 Toast.LENGTH_SHORT
             ).show()
-            loginViewModel.setShowToast(false) // Reset showToast state
+            loginViewModel.setShowToast(false)
         }
     }
 
@@ -72,8 +79,10 @@ fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster:
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             value = phoneState,
+            isError = phoneError,
             onValueChange = {
                loginViewModel.setPhoneNumber(it)
+                phoneError = false
 
             },
             label = {
@@ -84,6 +93,15 @@ fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster:
             ),
             maxLines = 1
         )
+        if (phoneError) {
+            Text(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                textAlign = TextAlign.Start,
+                fontSize = 14.sp,
+                text = "Phone number cannot be empty!",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         Spacer(modifier =Modifier.height(16.dp))
 
@@ -94,14 +112,25 @@ fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster:
             value = passwordState,
             onValueChange = {
                  loginViewModel.setPassword(it)
+                passwordError = false
 
             },
             label = {
                 Text(text = stringResource(R.string.password))
             },
+            isError = passwordError,
             visualTransformation = PasswordVisualTransformation(),
             maxLines = 1
         )
+        if (passwordError) {
+            Text(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                textAlign = TextAlign.Start,
+                fontSize = 14.sp,
+                text = "Password cannot be empty!",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
 
         Spacer(modifier =Modifier.height(10.dp))
@@ -112,6 +141,8 @@ fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster:
 //            viewModel.login(phone, password) {
 //                onLoginSuccess()
 //            }
+            phoneError = phoneState.isEmpty()
+            passwordError = passwordState.isEmpty()
             loginViewModel.login()
         }) {
             Text(text = stringResource(R.string.login))
@@ -135,11 +166,12 @@ fun LoginScreen(loginViewModel:LoginViewModel= hiltViewModel(), onClickReigster:
             }
 
             is LoginResult.Failure -> {
-                // Show Toast when login fails
                 LaunchedEffect(loginResult) {
                     Toast.makeText(
                         context,
-                        (loginResult as LoginResult.Failure).message,
+                        "Invalid phone number or password!"
+                        ,
+
                         Toast.LENGTH_SHORT
                     ).show()
                 }

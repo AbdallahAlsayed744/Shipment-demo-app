@@ -1,4 +1,4 @@
-package com.example.shipmentdemoapp.data.remote.networking
+package com.example.shipmentdemoapp.data.remote.dto
 
 data class LoginRequest(
     val phone: String,

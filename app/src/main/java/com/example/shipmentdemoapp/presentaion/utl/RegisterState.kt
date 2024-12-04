@@ -1,4 +1,4 @@
-package com.example.shipmentdemoapp.presentaion
+package com.example.shipmentdemoapp.presentaion.utl
 
 import com.example.shipmentdemoapp.data.remote.dto.CountriesResponse
 import com.example.shipmentdemoapp.data.remote.dto.RegisterResponse

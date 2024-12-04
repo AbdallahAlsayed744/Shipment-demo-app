@@ -15,7 +15,7 @@ class HomeViewModel @Inject constructor(
     private val getShipmentsUseCase: GetShipmentsUseCase
 ) : ViewModel() {
 
-    private val _shipments = MutableStateFlow<List<Shipment>>(emptyList()) // Initialize as empty list
+    private val _shipments = MutableStateFlow<List<Shipment>>(emptyList())
     val shipments: StateFlow<List<Shipment>> = _shipments
 
     private val _isLoading = MutableStateFlow(false)
@@ -33,7 +33,7 @@ class HomeViewModel @Inject constructor(
                 val response = getShipmentsUseCase(token,page)
                 if (response.isSuccessful) {
                     val data = response.body()
-                    _shipments.value = data?.shipments?.data?: emptyList() // Ensure it's never null
+                    _shipments.value = data?.shipments?.data?: emptyList()
                 } else {
                     _errorMessage.value = "Failed to fetch shipments: ${response.message()}"
                 }

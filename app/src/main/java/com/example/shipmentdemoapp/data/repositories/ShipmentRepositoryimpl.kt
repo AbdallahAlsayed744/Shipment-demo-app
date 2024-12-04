@@ -20,21 +20,20 @@ class ShipmentRepositoryimpl(
             Log.e("ShipmentRepositoryImpl", "Request: ${response.body()}")
 
             if (response.isSuccessful) {
-                // If response is successful, return the response
                 Log.e("ShipmentRepositoryImpl", "Request success: ${response.body()}")
 
 
                 response
             } else {
-                // Log the error response
-                val errorBody = response.errorBody()?.string() // Extract error body as string
+
+                val errorBody = response.errorBody()?.string()
                 Log.e("ShipmentRepositoryImpl", "Request failed with error: $errorBody")
-                response // You can also handle errors differently if needed
+                response
             }
         } catch (e: Exception) {
-            // Handle network or other exceptions
+
             Log.e("ShipmentRepositoryImpl", "Exception: ${e.localizedMessage}")
-            throw e // Optionally rethrow the exception
+            throw e
         }
     }
 }

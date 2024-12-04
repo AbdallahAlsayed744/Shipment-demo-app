@@ -1,6 +1,5 @@
 package com.example.shipmentdemoapp.domain.usecase
 
-import com.example.shipmentdemoapp.data.remote.dto.Response
 import com.example.shipmentdemoapp.data.remote.dto.ShipmentResponse
 import com.example.shipmentdemoapp.domain.repositories.ShipmentDataRepository
 

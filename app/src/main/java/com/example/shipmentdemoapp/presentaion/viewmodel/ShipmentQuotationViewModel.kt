@@ -1,13 +1,11 @@
 package com.example.shipmentdemoapp.presentaion.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shipmentdemoapp.data.local.TokenManager
 import com.example.shipmentdemoapp.data.remote.dto.QuotationResponse
 import com.example.shipmentdemoapp.data.remote.dto.ShipmentRequest
 import com.example.shipmentdemoapp.domain.usecase.RequestShipmentQuotationUseCase
-import com.example.shipmentdemoapp.presentaion.RegisterState
 import com.example.shipmentdemoapp.presentaion.ui.composables.Container
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

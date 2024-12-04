@@ -4,10 +4,9 @@ import android.util.Log
 import com.example.shipmentdemoapp.data.local.TokenManager
 import com.example.shipmentdemoapp.data.local.UserManager
 import com.example.shipmentdemoapp.data.remote.dto.LoginResponse
-import com.example.shipmentdemoapp.data.remote.dto.Model
 import com.example.shipmentdemoapp.data.remote.networking.ApiService
-import com.example.shipmentdemoapp.data.remote.networking.LoginRequest
-import com.example.shipmentdemoapp.data.remote.networking.RefreshRequest
+import com.example.shipmentdemoapp.data.remote.dto.LoginRequest
+import com.example.shipmentdemoapp.data.remote.dto.RefreshRequest
 import com.example.shipmentdemoapp.domain.repositories.LoginRepository
 import kotlinx.coroutines.flow.first
 import retrofit2.Response

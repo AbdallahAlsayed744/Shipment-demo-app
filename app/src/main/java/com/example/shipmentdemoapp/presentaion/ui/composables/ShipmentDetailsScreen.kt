@@ -64,7 +64,7 @@ fun ShipmentDetailsContent(details: ShipmentDetailsResponse) {
             .padding(16.dp)
             .fillMaxSize()
     ) {
-        // Shipment Info Card
+
         Card(
             modifier = Modifier.padding(top = 26.dp).fillMaxWidth(),
 
@@ -123,7 +123,6 @@ fun ShipmentDetailsContent(details: ShipmentDetailsResponse) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Containers Section
         Text(
             text = "Containers:",
             style = MaterialTheme.typography.bodyLarge,

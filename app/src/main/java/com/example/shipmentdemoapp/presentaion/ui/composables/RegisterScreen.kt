@@ -2,13 +2,11 @@ package com.example.shipmentdemoapp.presentaion.ui.composables
 
 import android.content.Context
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,10 +24,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,30 +35,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.shipmentdemoapp.R
 import com.example.shipmentdemoapp.data.remote.dto.Country
-import com.example.shipmentdemoapp.presentaion.RegisterState
+import com.example.shipmentdemoapp.presentaion.utl.RegisterState
 import com.example.shipmentdemoapp.presentaion.viewmodel.RegisterViewModel
 import java.io.File
-import java.io.FileOutputStream
 
 
 @Composable
 fun RegisterScreen(
-    viewModel: RegisterViewModel= hiltViewModel(),
+    viewModel: RegisterViewModel = hiltViewModel(),
     onLoginClick: () -> Unit
 ) {
-
     val registrationState by viewModel.registrationState.collectAsState()
     val countriesState by viewModel.countriesState.collectAsState()
 
@@ -71,74 +67,97 @@ fun RegisterScreen(
 
     val context = LocalContext.current
 
-
-
-
     var selectedCountry by remember { mutableStateOf<Country?>(null) }
     var expanded by remember { mutableStateOf(false) }
-
     var selectedFile by remember { mutableStateOf<File?>(null) }
 
 
-
-
+    var nameError by remember { mutableStateOf(false) }
+    var emailError by remember { mutableStateOf(false) }
+    var phoneError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
+    var countryError by remember { mutableStateOf(false) }
+    var fileError by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-       ,
+            .padding(top = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         OutlinedTextField(
             value = name,
             onValueChange = {
-              viewModel.setName(it)
+                viewModel.setName(it)
+                nameError = false
             },
-            label = { Text(text = stringResource(id = R.string.name)) },
+            label = { Text(text = "Name") },
+            isError = nameError,
             modifier = Modifier.fillMaxWidth()
         )
+        if (nameError) Text("Name is required",modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            textAlign = TextAlign.Start,
+            fontSize = 14.sp, color = MaterialTheme.colorScheme.error)
+
+        Spacer(modifier = Modifier.height(8.dp))
 
 
         OutlinedTextField(
             value = email,
             onValueChange = {
-               viewModel.setEmail(it)
+                viewModel.setEmail(it)
+                emailError = false
             },
-            label = { Text(text = stringResource(id = R.string.email)) },
+            label = { Text(text = "Email") },
+            isError = emailError,
             modifier = Modifier.fillMaxWidth()
         )
+        if (emailError) Text("Email is required",modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            textAlign = TextAlign.Start,
+            fontSize = 14.sp,color = MaterialTheme.colorScheme.error)
 
+        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = phone,
             onValueChange = {
                 viewModel.setPhone(it)
+                phoneError = false
             },
-            label = { Text(text = stringResource(id = R.string.phone)) },
+            label = { Text(text = "Phone") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
+            isError = phoneError,
             modifier = Modifier.fillMaxWidth()
         )
+        if (phoneError) Text("Phone number is required", modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            textAlign = TextAlign.Start,
+            fontSize = 14.sp,color = MaterialTheme.colorScheme.error)
 
-        // Password
+        Spacer(modifier = Modifier.height(8.dp))
+
+
         OutlinedTextField(
             value = password,
             onValueChange = {
                 viewModel.setPassword(it)
+                passwordError = false
             },
-            label = { Text(stringResource(id = R.string.password)) },
+            label = { Text(text = "Password") },
             visualTransformation = PasswordVisualTransformation(),
+            isError = passwordError,
             modifier = Modifier.fillMaxWidth()
         )
+        if (passwordError) Text("Password is required", modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            textAlign = TextAlign.Start,
+            fontSize = 14.sp,color = MaterialTheme.colorScheme.error)
 
-        Spacer(modifier = Modifier.height(10.dp))
-
+        Spacer(modifier = Modifier.height(8.dp))
 
         Button(
             onClick = { expanded = !expanded },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = selectedCountry?.name ?: "Select Country",
@@ -146,10 +165,12 @@ fun RegisterScreen(
             )
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Dropdown Arrow",
-                modifier = Modifier.size(24.dp)
+                contentDescription = "Dropdown Arrow"
             )
         }
+        if (countryError) Text("Please select a country", modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            textAlign = TextAlign.Start,
+            fontSize = 14.sp,color = MaterialTheme.colorScheme.error)
 
         DropdownMenu(
             expanded = expanded,
@@ -161,35 +182,55 @@ fun RegisterScreen(
                     text = { Text(text = country.name) },
                     onClick = {
                         selectedCountry = country
+                        countryError = false
                         expanded = false
                     }
                 )
             }
         }
 
-        // Image Picker
-       ImagePickerScreen(
-           onFileSelected = { file ->
-               selectedFile = file
-           }
-       )
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(20.dp))
 
-        // Register Button
+        ImagePickerScreen(
+            onFileSelected = { file ->
+                selectedFile = file
+                fileError = false
+            },
+            fileError = fileError
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
         Button(
             onClick = {
-                selectedFile?.let { file ->
-                    Log.d("RegisterScreenfile", "file: $file")
-                    viewModel.register(name, email, phone, password, selectedCountry?.id.toString(), "",file,"")
-                    Log.d("selectedCountry", "selectedCountry: ${selectedCountry?.id}")
+
+                nameError = name.isEmpty()
+                emailError = email.isEmpty()
+                phoneError = phone.isEmpty()
+                passwordError = password.isEmpty()
+                countryError = selectedCountry == null
+                fileError = selectedFile == null
+
+                if (!nameError && !emailError && !phoneError && !passwordError && !countryError && !fileError) {
+                    selectedFile?.let { file ->
+                        viewModel.register(
+                            name,
+                            email,
+                            phone,
+                            password,
+                            selectedCountry!!.id.toString(),
+                            "",
+                            file,
+                            ""
+                        )
+                    }
                 }
-                Toast.makeText(context, "Please select an image", Toast.LENGTH_SHORT).show()
-//                onRegisterClick(name, email, phone, password, countryList.indexOf(selectedCountry), imageUri)
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = stringResource(id = R.string.register))
+            Text("Register")
         }
 
         when (registrationState) {
@@ -197,27 +238,21 @@ fun RegisterScreen(
             is RegisterState.Success -> {
                 Text("Registration Successful!")
                 onLoginClick()
-
             }
-            is RegisterState.Failure ->
-                Text("Error: " +
-                    "${(registrationState as RegisterState.Failure).error}"
-
+            is RegisterState.Failure -> Text(
+                "Error: ${(registrationState as RegisterState.Failure).error}",
+                color = MaterialTheme.colorScheme.error
             )
-
             else -> Unit
         }
-
-
     }
-
-
-
 }
 
-
 @Composable
-fun ImagePickerScreen(onFileSelected: (File) -> Unit) {
+fun ImagePickerScreen(
+    onFileSelected: (File) -> Unit,
+    fileError: Boolean
+) {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
 
@@ -225,40 +260,37 @@ fun ImagePickerScreen(onFileSelected: (File) -> Unit) {
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
             uri?.let {
-                val file = getFileFromUri(context, uri) // Use the context here
+                val file = getFileFromUri(context, uri)
                 if (file != null) {
                     onFileSelected(file)
                     selectedImageUri = uri
-                }else {
-                    Log.e("ImagePicker", "Failed to retrieve file from URI")
+                } else {
+                    Toast.makeText(context, "Failed to retrieve image", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     )
 
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 15.dp, vertical = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(
-            onClick = {
-                launcher.launch("image/*")
-            },
+            onClick = { launcher.launch("image/*") },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Select Profile Image")
+            Text("Pick an Image")
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (fileError) Text("Image is required",modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            textAlign = TextAlign.Start,
+            fontSize = 14.sp, color = MaterialTheme.colorScheme.error)
 
         selectedImageUri?.let { uri ->
             Image(
                 painter = rememberAsyncImagePainter(uri),
                 contentDescription = "Selected Image",
                 modifier = Modifier
-                    .size(200.dp)
+                    .size(150.dp)
                     .padding(8.dp),
                 contentScale = ContentScale.Crop
             )
@@ -268,22 +300,17 @@ fun ImagePickerScreen(onFileSelected: (File) -> Unit) {
 
 fun getFileFromUri(context: Context, uri: Uri): File? {
     return try {
-        // Open InputStream from the content URI
         val inputStream = context.contentResolver.openInputStream(uri)
-
-        // Create a temporary file in the cache directory
         val tempFile = File.createTempFile("image_picker", ".jpg", context.cacheDir)
-
-        // Copy the contents of the InputStream into the temporary file
         inputStream?.use { input ->
             tempFile.outputStream().use { output ->
                 input.copyTo(output)
             }
         }
-
-        tempFile // Return the created temporary file
+        tempFile
     } catch (e: Exception) {
         e.printStackTrace()
         null
     }
 }
+

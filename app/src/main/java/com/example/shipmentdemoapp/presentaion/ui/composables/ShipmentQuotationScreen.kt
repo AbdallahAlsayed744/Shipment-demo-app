@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.shipmentdemoapp.data.local.TokenManager
 import com.example.shipmentdemoapp.data.local.UserManager
 import com.example.shipmentdemoapp.presentaion.theme.green
+import com.example.shipmentdemoapp.presentaion.theme.red
 import com.example.shipmentdemoapp.presentaion.viewmodel.ShipmentQuotationViewModel
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.flow.firstOrNull
@@ -42,8 +44,8 @@ import javax.inject.Inject
 @Composable
 fun ShipmentQuotationScreen(
     shipViewModel: ShipmentQuotationViewModel = hiltViewModel(),
-    token:String,
-    onSubmitSuccess: () -> Unit // Callback for successful submission
+    token: String,
+    onSubmitSuccess: () -> Unit
 ) {
     val shipmentName by shipViewModel.shipmentName.collectAsState()
     val description by shipViewModel.shipmentDescription.collectAsState()
@@ -52,117 +54,130 @@ fun ShipmentQuotationScreen(
     val isLoading by shipViewModel.isLoading.collectAsState()
     val errorMessage by shipViewModel.errorMessage.collectAsState()
 
-    val containers = remember { mutableStateListOf<Container>() } // List of containers
+    val containers = remember { mutableStateListOf<Container>() }
 
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
 
-
-
-
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()), // Enable scrolling for the screen
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Shipment Name Input
-        OutlinedTextField(
-            value = shipmentName,
-            onValueChange = { shipViewModel.setShipmentName(it) },
-            label = { Text("Shipment Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // Description Input
-        OutlinedTextField(
-            value = description,
-            onValueChange = { shipViewModel.setShipmentDescription(it) },
-            label = { Text("Description") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // Quantity Input
-        OutlinedTextField(
-            value = quantity,
-            onValueChange = { shipViewModel.setShipmentQuntatiy(it) },
-            label = { Text("Quantity") },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // Containers Section
-        Text("Containers", style = MaterialTheme.typography.headlineSmall)
-        if (containers.isEmpty()) {
-            Button(
-                onClick = { containers.add(Container("", "", "", "")) },
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(56.dp), // Padding for the bottom bar
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Add Container")
-            }
-        } else {
-            containers.forEachIndexed { index, container ->
-                ContainerInput(
-                    container = container,
-                    isLast = index == containers.lastIndex,
-                    onRemove = { containers.removeAt(index) },
-                    onAdd = { containers.add(Container("", "", "", "")) },
-                    onUpdate = { updatedContainer -> containers[index] = updatedContainer }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // Comment Input
-        OutlinedTextField(
-            value = comment,
-            onValueChange = { shipViewModel.setShipmentcomment(it) },
-            label = { Text("Comment") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-//        Spacer(modifier = Modifier.height(20.dp))
-
-        // Submit Button
-        Button(
-            onClick = {
-                val quantityInt = quantity.toIntOrNull() ?: 0
-                if (containers.isEmpty()) {
-                    shipViewModel.setErrorMessage("Please add at least one container.")
-                } else {
-                    shipViewModel.submitShipmentQuotation(
-
-                        containers = containers,
-                        quantity = quantityInt,
-                        mytoken = token,
-                        onSuccess = onSubmitSuccess
+                if (errorMessage.isNotEmpty()) {
+                    Text(
+                        text = "Error: $errorMessage",
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    Log.d("Shipmentoken", "token: ${token}")
                 }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (isLoading) {
-                Text("Submitting...")
-            } else {
-                Text("Submit")
+
+                Button(
+                    onClick = {
+                        val quantityInt = quantity.toIntOrNull() ?: 0
+                        when {
+                            containers.isEmpty() -> shipViewModel.setErrorMessage("Please add at least one container.")
+                            shipmentName.isEmpty() || description.isEmpty() || quantity.isEmpty() || comment.isEmpty() ->
+                                shipViewModel.setErrorMessage("Please fill all fields.")
+                            else -> shipViewModel.submitShipmentQuotation(
+                                containers = containers,
+                                quantity = quantityInt,
+                                mytoken = token,
+                                onSuccess = onSubmitSuccess
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading
+                ) {
+                    if (isLoading) {
+                        Text("Submitting...")
+                    } else {
+                        Text("Submit")
+                    }
+                }
             }
         }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
+                value = shipmentName,
+                onValueChange = { shipViewModel.setShipmentName(it) },
+                label = { Text("Shipment Name") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp)
+            )
 
-        // Error Message Display
-        if (errorMessage.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(10.dp))
-            Text("Error: $errorMessage", color = MaterialTheme.colorScheme.error)
+            OutlinedTextField(
+                value = description,
+                onValueChange = { shipViewModel.setShipmentDescription(it) },
+                label = { Text("Description") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp)
+            )
+
+            OutlinedTextField(
+                value = quantity,
+                onValueChange = { shipViewModel.setShipmentQuntatiy(it) },
+                label = { Text("Quantity") },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp)
+            )
+
+            Text(
+                text = "Containers",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            if (containers.isEmpty()) {
+                Button(
+                    onClick = { containers.add(Container("", "", "", "")) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                ) {
+                    Text("Add Container")
+                }
+            } else {
+                containers.forEachIndexed { index, container ->
+                    ContainerInput(
+                        container = container,
+                        isLast = index == containers.lastIndex,
+                        onRemove = { containers.removeAt(index) },
+                        onAdd = { containers.add(Container("", "", "", "")) },
+                        onUpdate = { updatedContainer -> containers[index] = updatedContainer }
+                    )
+                }
+            }
+
+            OutlinedTextField(
+                value = comment,
+                onValueChange = { shipViewModel.setShipmentcomment(it) },
+                label = { Text("Comment") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
+            )
         }
     }
 }
+
+
+
 
 @Composable
 fun ContainerInput(
@@ -214,7 +229,7 @@ fun ContainerInput(
                     .weight(1f)
                     .padding(end = 4.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red
+                    containerColor = red
                 )
 
             ) {

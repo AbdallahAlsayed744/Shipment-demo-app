@@ -6,13 +6,12 @@ import com.example.shipmentdemoapp.data.local.TokenManager
 import com.example.shipmentdemoapp.data.local.UserManager
 import com.example.shipmentdemoapp.domain.usecase.LoginUseCase
 import com.example.shipmentdemoapp.domain.usecase.RefreshTokenUseCase
-import com.example.shipmentdemoapp.presentaion.LoginResult
+import com.example.shipmentdemoapp.presentaion.utl.LoginResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,7 +38,7 @@ class LoginViewModel @Inject constructor(
     val refreshToken: Flow<String?> = tokenManager.refreshToken
 
 
-    private var _token = MutableStateFlow("fcm-token") // Default token value
+    private var _token = MutableStateFlow("fcm-token")
     val token: StateFlow<String> get() = _token
 
     private var _loginResult = MutableStateFlow<LoginResult>(LoginResult.Idle)
@@ -110,7 +109,6 @@ class LoginViewModel @Inject constructor(
 
                         _loginResult.value = LoginResult.Success(responseBody)
                     } else {
-                        // Handle invalid data
                         _loginResult.value = LoginResult.Failure("Invalid response: Missing user or token.")
                     }
                 } else {

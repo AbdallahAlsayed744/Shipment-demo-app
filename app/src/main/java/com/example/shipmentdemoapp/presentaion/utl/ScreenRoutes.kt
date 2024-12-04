@@ -1,6 +1,4 @@
-package com.example.shipmentdemoapp.presentaion
-
-import kotlinx.serialization.Serializable
+package com.example.shipmentdemoapp.presentaion.utl
 
 sealed class ScreenRoutes(val route: String) {
     object LoginScreen : ScreenRoutes("login_screen")

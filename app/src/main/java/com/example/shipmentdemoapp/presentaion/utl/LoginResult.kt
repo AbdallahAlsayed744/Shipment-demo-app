@@ -1,7 +1,6 @@
-package com.example.shipmentdemoapp.presentaion
+package com.example.shipmentdemoapp.presentaion.utl
 
 import com.example.shipmentdemoapp.data.remote.dto.LoginResponse
-import com.example.shipmentdemoapp.data.remote.dto.Model
 
 sealed class LoginResult {
     object Idle : LoginResult()
